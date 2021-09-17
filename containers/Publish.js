@@ -29,9 +29,6 @@ export default function Publish({ userToken, userId, setUser }) {
   const [infoUpdate, setInfoUpdate] = useState(false);
   const [pictureUpdate, setPictureUpdate] = useState(false);
 
-  const [offerId, setOfferId] = useState("");
-  const [isValidofferId, setIsValidofferId] = useState(false);
-
   const [pictures, setPictures] = useState([]);
 
   const [error, setError] = useState("");
@@ -87,13 +84,11 @@ export default function Publish({ userToken, userId, setUser }) {
             }
           );
           console.log(response.data);
-          setOfferId(response.data._id);
+
           setSubmitting(true);
 
           if (response.status === 200) {
-            console.log("offerId >", offerId);
-            setIsValidofferId(true);
-            fetchDataImg();
+            fetchDataImg(response.data._id);
             setSubmitting(false);
           }
         } else {
@@ -106,11 +101,7 @@ export default function Publish({ userToken, userId, setUser }) {
     }
   };
 
-  useEffect(() => {
-    fetchDataImg();
-  }, [isValidofferId]);
-
-  const fetchDataImg = async () => {
+  const fetchDataImg = async (offerId) => {
     try {
       const token = await AsyncStorage.getItem("userToken");
       const id = await AsyncStorage.getItem("userId");
@@ -171,6 +162,7 @@ export default function Publish({ userToken, userId, setUser }) {
               onChangeText={(text) => {
                 setPrice(text);
                 setInfoUpdate(true);
+                keyboardType = "numeric";
               }}
               value={price}
             />
@@ -192,6 +184,7 @@ export default function Publish({ userToken, userId, setUser }) {
                 setInfoUpdate(true);
               }}
               value={locationLat}
+              keyboardType="numeric"
             />
             <TextInput
               style={styles.input}
@@ -201,20 +194,19 @@ export default function Publish({ userToken, userId, setUser }) {
                 setInfoUpdate(true);
               }}
               value={locationLng}
+              keyboardType="numeric"
             />
           </View>
           <View style={styles.inputPhotos}>
             <TouchableOpacity onPress={handlePicture}>
               <MaterialIcons name="add-photo-alternate" size={28} color="grey" />
             </TouchableOpacity>
+            <Text>Max 5 pictures</Text>
           </View>
 
           <View>
             <Text style={styles.txtError}>{error}</Text>
-            <Text>{offerId}</Text>
-            <Text>{pictureUpdate ? "yes" : "no"}</Text>
 
-            <Text>{pictures}</Text>
             {isSubmitting ? (
               <ActivityIndicator size="small" color="black" />
             ) : (

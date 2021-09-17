@@ -4,11 +4,15 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView, ScrollVi
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SmallHeader from "../components/SmallHeader";
+import CardProfilRoom from "../components/CardProfilRoom";
+import { useNavigation } from "@react-navigation/native";
 
 export default function GlobalProfileScreen({ userToken, userId, setUser }) {
+  const navigation = useNavigation();
+
   const [username, setUsername] = useState("");
   const [picture, setPicture] = useState("");
-  const [rooms, setRooms] = useState("");
+  const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,12 +48,9 @@ export default function GlobalProfileScreen({ userToken, userId, setUser }) {
               Authorization: `Bearer ${token}`,
             },
           });
-          console.log("fetchDataRoom >>>>", response.data);
+          console.log(response.data);
 
           setRooms(response.data);
-          if (response.data.account.photo.url) {
-            setPicture(response.data.account.photo.url);
-          }
         }
       } catch (error) {
         console.log(error.message);
@@ -57,14 +58,23 @@ export default function GlobalProfileScreen({ userToken, userId, setUser }) {
     };
 
     fetchData();
+    fetchDataRoom();
   }, []);
+
+  const userProfil = async () => {
+    const id = await AsyncStorage.getItem("userId");
+    navigation.navigate("UserProfile", { id: id });
+  };
+  //   const roomProfil = async () => {
+  //     navigation.navigate("RoomProfile", { id: room._id });
+  //   };
   return (
     <View>
       <SafeAreaView>
         <ScrollView>
           <SmallHeader image={require("../assets/logo.png")} />
           <View style={styles.container}>
-            <TouchableOpacity style={styles.profilContainer}>
+            <TouchableOpacity style={styles.profilContainer} onPress={userProfil}>
               <View>
                 {picture ? (
                   <Image source={{ uri: picture }} style={styles.imageContainer} />
@@ -73,21 +83,33 @@ export default function GlobalProfileScreen({ userToken, userId, setUser }) {
                 )}
               </View>
               <View>
-                <Text style={styles.txtUsername}>{username}</Text>
+                <Text style={styles.username}>{username}</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.roomContainer}>
-              <View>
-                {/* {picture ? (
-                  <Image source={{ uri: picture }} style={styles.imageContainer} />
-                ) : (
-                  <Image source={require("../assets/avatar-user.png")} style={styles.imageContainer} />
-                )} */}
-              </View>
-              <View>
-                <Text style={styles.txtUsername}>{rooms[0]}</Text>
-              </View>
-            </TouchableOpacity>
+            <View>
+              <Text style={styles.title}>Rooms</Text>
+            </View>
+
+            {rooms.map((room, index) => {
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    navigation.navigate("RoomProfile", { id: room._id });
+                  }}
+                >
+                  <CardProfilRoom
+                    title={room.title}
+                    price={`${room.price} €`}
+                    image={{
+                      uri: room.photos[0].url,
+                    }}
+                    ratingValue={4}
+                    reviews={`${48} reviews`}
+                  />
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -121,7 +143,13 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     marginRight: 20,
   },
-  txtUsername: {
+  username: {
+    color: "#cecece",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  title: {
+    textAlign: "center",
     color: "#cecece",
     fontSize: 24,
     fontWeight: "bold",

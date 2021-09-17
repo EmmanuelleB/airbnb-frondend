@@ -8,13 +8,14 @@ import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 
 import HomeScreen from "./containers/HomeScreen";
-import ProfileScreen from "./containers/ProfileScreen";
 import GlobalProfileScreen from "./containers/GlobalProfileScreen";
 import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
 import AroundMe from "./containers/AroundMe";
 import RoomScreen from "./containers/RoomScreen";
 import Publish from "./containers/Publish";
+import UserProfile from "./containers/UserProfile";
+import RoomProfile from "./containers/RoomProfile";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -133,18 +134,19 @@ export default function App() {
                   }}
                 >
                   {() => (
-                    // <Stack.Navigator>
-                    //   <Stack.Screen name="Profile" options={{ headerShown: false }}>
-                    //     {(props) => (
-                    //       <ProfileScreen {...props} setUser={setUser} userToken={userToken} userId={userId} />
-                    //     )}
-                    //   </Stack.Screen>
-                    // </Stack.Navigator>
                     <Stack.Navigator>
                       <Stack.Screen name="Profile" options={{ headerShown: false }}>
                         {(props) => (
                           <GlobalProfileScreen {...props} setUser={setUser} userToken={userToken} userId={userId} />
                         )}
+                      </Stack.Screen>
+
+                      <Stack.Screen name="UserProfile" options={{ headerShown: false }}>
+                        {(props) => <UserProfile {...props} setUser={setUser} />}
+                      </Stack.Screen>
+
+                      <Stack.Screen name="RoomProfile" options={{ headerShown: false }}>
+                        {(props) => <RoomProfile {...props} setUser={setUser} />}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}

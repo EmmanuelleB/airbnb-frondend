@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
+
 import {
   Dimensions,
   Text,
@@ -19,9 +20,11 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import SmallHeader from "../components/SmallHeader";
 import { MaterialIcons } from "@expo/vector-icons";
 
-export default function ProfileScreen({ userToken, userId, setUser }) {
+export default function UserProfile({ setUser, route }) {
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
+
+  const id = route.params.id;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +40,7 @@ export default function ProfileScreen({ userToken, userId, setUser }) {
   const fetchData = async () => {
     try {
       const token = await AsyncStorage.getItem("userToken");
-      const id = await AsyncStorage.getItem("userId");
+      // const id = await AsyncStorage.getItem("userId");
 
       if (token && id) {
         const response = await axios.get(`http://192.168.1.39:3000/users/${id}`, {
@@ -108,7 +111,7 @@ export default function ProfileScreen({ userToken, userId, setUser }) {
   const handleUpdate = async () => {
     const token = await AsyncStorage.getItem("userToken");
     const id = await AsyncStorage.getItem("userId");
-    console.log("coucou");
+
     console.log("pictureModified  > ", pictureModified);
 
     try {
